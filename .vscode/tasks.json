@@ -1,0 +1,125 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "${config:dosbox.location}/DOSBox.exe",
+            "args": [
+                "-conf", "${config:dosbox.location}/dosbox-0.74-3.conf",
+                "-c", "@mount c: ${config:dosbox.location}/tmp >NUL",
+                "-c", "@mount Q: ${fileDirname} >NUL",
+                "-c", "@Q:",
+                "-c", "masm ${fileBasename}",
+                "-c", "@pause",
+                "-c", "exit", ">nul"
+            ],
+            "options": {
+                "cwd": "${config:dosbox.location}/"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "link",
+            "type": "shell",
+            "command": "${config:dosbox.location}/DOSBox.exe",
+            "args": [
+                "-conf", "${config:dosbox.location}/dosbox-0.74-3.conf",
+                "-c", "@mount c: {config:dosbox.location}/tmp >NUL",
+                "-c", "@mount Q: ${fileDirname} >NUL",
+                "-c", "@Q:",
+                "-c", "link ${fileBasenameNoExtension}.OBJ",
+                "-c", "@pause",
+                "-c", "exit", ">nul"
+            ],
+            "dependsOn": "build",
+            "options": {
+                "cwd": "${config:dosbox.location}/"
+            }
+        },
+        {
+            "label": "run (build)",
+            "type": "shell",
+            "command": "${config:dosbox.location}/DOSBox.exe",
+            "args": [
+                "-conf", "${config:dosbox.location}/dosbox-0.74-3.conf",
+                "-c", "@mount c: ${config:dosbox.location}/tmp >NUL",
+                "-c", "@mount Q: ${fileDirname} >NUL",
+                "-c", "@Q:",
+                "-c", "${fileBasenameNoExtension}.${input:extension}",
+                "-c", "@pause",
+                "-c", "exit", ">nul"
+            ],
+            "options": {
+                "cwd": "${config:dosbox.location}/"
+            },
+            "dependsOn": "link"
+        },
+        {
+            "label": "debug (build)",
+            "type": "shell",
+            "command": "${config:dosbox.location}/DOSBox.exe",
+            "args": [
+                "-conf", "${config:dosbox.location}/dosbox-0.74-3.conf",
+                "-c", "@mount c: ${config:dosbox.location}/tmp >NUL",
+                "-c", "@mount Q: ${fileDirname} >NUL",
+                "-c", "@Q:",
+                "-c", "debug ${fileBasenameNoExtension}.${input:extension}",
+                "-c", "@pause",
+                "-c", "exit", ">nul"
+            ],
+            "options": {
+                "cwd": "${config:dosbox.location}/"
+            },
+            "dependsOn": "link"
+        },
+        {
+            "label": "run",
+            "type": "shell",
+            "command": "${config:dosbox.location}/DOSBox.exe",
+            "args": [
+                "-conf", "${config:dosbox.location}/dosbox-0.74-3.conf",
+                "-c", "@mount c: ${config:dosbox.location}/tmp >NUL",
+                "-c", "@mount Q: ${fileDirname} >NUL",
+                "-c", "@Q:",
+                "-c", "${fileBasenameNoExtension}.${input:extension}",
+                "-c", "@pause",
+                "-c", "exit", ">nul"
+            ],
+            "options": {
+                "cwd": "${config:dosbox.location}/"
+            }
+        },
+        {
+            "label": "debug",
+            "type": "shell",
+            "command": "${config:dosbox.location}/DOSBox.exe",
+            "args": [
+                "-conf", "${config:dosbox.location}/dosbox-0.74-3.conf",
+                "-c", "@mount c: ${config:dosbox.location}/tmp >NUL",
+                "-c", "@mount Q: ${fileDirname} >NUL",
+                "-c", "@Q:",
+                "-c", "${fileBasenameNoExtension}.${input:extension}",
+                "-c", "@pause",
+                "-c", "exit", ">nul"
+            ],
+            "options": {
+                "cwd": "${config:dosbox.location}/"
+            }
+        }
+    ],
+    "inputs": [
+        {
+            "type": "promptString",
+            "id": "extension",
+            "description": "Extension of your component (exe or com)",
+            "default": "exe"
+            // type specific configuration attributes
+        }
+      ]
+}
